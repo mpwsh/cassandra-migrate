@@ -9,7 +9,7 @@ The `<snapshot>.tar.gz` file will be removed to save space after the snapshot ha
 
 The `restore-snapshot.sh` script will be sent to the ***Target*** Cassandra nodes and use `cqlsh` to create the Keyspaces from the Source snapshot, this will also create the Tables that we need in order to start pushing the raw `.db` files using `SSTableLoader`.
 
-All Cassandra operations are executed from [cassutils](https://github.com/mpw_sh/cassutils) docker image.
+All Cassandra operations are executed from [cassutils](https://github.com/mpwsh/cassutils) docker image.
 
 
 `start.sh` is the one (and only) script you'll execute in your local-machine. Usage described below.

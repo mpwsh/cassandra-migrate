@@ -1,5 +1,5 @@
 #This image contains all the necessary tools to perform the backup and restore tasks
-#more info in repo: https://github.com/mpw_sh/cassutils
+#more info in repo: https://github.com/mpwsh/cassutils
 cassutils_image="mpwsh/cassutils:3.11"
 
 [s3]
