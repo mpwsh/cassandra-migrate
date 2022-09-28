@@ -41,10 +41,10 @@ validate       - Validate keyspace and table data in source or target cluster
 ```
 ```bash
 >>> Usage (Single task):
-./start.sh snapshot --config railcon-migration-config.toml
+./start.sh snapshot --config custom-migration-config.toml
 ./start.sh restore --no-download
 >>> Usage (Full migration):
 ./start.sh migrate
 >>> Usage (Run data validation in target cluster):
-./start.sh validate target --config yourconfig.toml --node-id 0
+./start.sh validate target --config custom-migration-config.toml --node-id 0
 ```
