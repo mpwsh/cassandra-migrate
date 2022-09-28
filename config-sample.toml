@@ -1,4 +1,5 @@
 #This image contains all the necessary tools to perform the backup and restore tasks
+#Build your own using the Dockerfile at https://github.com/mpwsh/cassandra-migrate/cassutils
 cassutils_image="mpwsh/cassutils:3.11"
 
 [s3]
@@ -64,7 +65,7 @@ work_path="/home/ec2-user/cass-migration"
 data_path="/var/lib/kubelet/plugins/kubernetes.io/aws-ebs/mounts/aws"
 #Mesos/DCOS
 #data_path="/var/lib/mesos/slave/volumes"
-#Cassandra dokxils (Only required if access without password is not available)
+#Cassandra details (Only required if access without password is not available)
 cassandra.dc_name="dc1"
 cassandra.user="dev-k8ssandra-superuser"
 cassandra.password="superuser-pw"
