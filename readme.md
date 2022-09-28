@@ -17,7 +17,7 @@ All Cassandra operations are executed from [cassutils](https://github.com/mpwsh/
 # Usage
 Complete the following to trigger a migration:
  - Modify the file [config-sample.toml](config-sample.toml) to suit your needs and save it as `config.toml`
- - Login to AWS using `gimme-aws-creds` or `awslogin <account-number>`
+ - Login to AWS CLI, set the `AWS_PROFILE` env var and validate account number with `aws sts get-caller-identity | jq -r .Account`
  - Launch the main script specifying your config file `./start.sh migrate --config config.toml`
 
 More options:
