@@ -1,0 +1,11 @@
+config.json
+config.toml
+docs.md
+config-back.toml
+log.out
+.aws
+.aws/credentials
+config-sample.json
+migrations
+keys
+*.csv

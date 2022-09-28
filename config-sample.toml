@@ -1,0 +1,121 @@
+#This image contains all the necessary tools to perform the backup and restore tasks
+#more info in repo: https://github.com/mpw_sh/cassutils
+cassutils_image="mpwsh/cassutils:3.11"
+
+[s3]
+#Fill below values accordingly.
+#if using gimme-aws-creds, use okta as your aws_profile
+aws_profile="your-aws-profile"
+region="us-east-1"
+#Make sure bucket exists before starting. This tool will fail otherwise.
+#bucket_name="dev-torq-use-railconn-dcos-s3"
+bucket_name="dev-k8ssandra-eks-bucket"
+#Optional: Bucket Prefix (folder) will be created if it doesn't exist
+prefix="dataml-migration-test-1"
+
+
+[snapshot]
+#This value will be appended to the file to be uploaded to S3.
+#Resulting file name: <node-name>-<snapshot-name>.tar.gz
+name = "dataml-migration-test-20211130"
+#Optional (Default: True)
+#If false, the expected snapshot structure is <snapshot-name>/<node-name>/<keyspace>/<table-name>
+#if true, filename convention expected is <node-name>-<snapshot-tag>.tar.gz
+compressed=false
+#Optional (Default: True)
+#This only works when taking a snapshot of all keyspaces.
+exclude_system_keyspaces=true
+#If restore_to_all_nodes is true, SSTableLoader will insert the data in all the nodes specified in target.nodes
+#If false, data from target.nodes[0] will be sent to source.nodes[0], target.nodes[1] to source.nodes[1] and so on.
+restore_to_all_nodes=false
+clear_table_ids=false
+#If you are specifying the keyspaces to take a snapshot from and want to take
+#a snapshot from the system ones as well you'll need to specify the system keyspaces one by one.
+#Specifying the keyspaces is optional. If not provided all keyspaces will be captured.
+[[snapshot.keyspace]]
+name = "okx"
+replication_factor=3
+#Restore_as is optional. If not specified, keyspace will be migrated using the same name.
+restore_as = "okx_history"
+#Specifying the tables is also optional. If not provided all tables will be backed up (full keyspace snapshot)
+#tables = [ "table1", "table2", "table3" ]
+
+#adding more keyspaces
+#[[snapshot.keyspace]]
+#name = "get"
+#restore_as = "get_new"
+
+[validation]
+#How many cpus to use when validating.
+#Check the current usage of the cluster before using a high value here.
+#Min value is 1, max 16
+#numprocesses=13
+#Connection timeout is set to 200 as default. Change to higher value if receiving errors
+connection_timeout=200
+
+[source]
+ssh_user="ec2-user"
+ssh_key_path="/Users/mpw/dataml-migration/target/node-key.pem"
+#Location to copy the files and scripts to work on the node. Folder will be created if it doesn't exist
+work_path="/home/ec2-user/cass-migration"
+#Folder to search for cassandra data folder.
+#This doesn't have to be the exact path. Find will be used to locate the final data folder
+#Try to get as close as possible to reduce the time searching for it.
+#EKS PV/EBS Mounts
+data_path="/var/lib/kubelet/plugins/kubernetes.io/aws-ebs/mounts/aws"
+#Mesos/DCOS
+#data_path="/var/lib/mesos/slave/volumes"
+#Cassandra dokxils (Only required if access without password is not available)
+cassandra.dc_name="dc1"
+cassandra.user="dev-k8ssandra-superuser"
+cassandra.password="superuser-pw"
+
+[[source.nodes]]
+#Give your node a name, this will be prepended into the snapshot name.
+name = "node-0"
+#Required: Host IP is used to connect through SSH and use SCP to send the required files.
+host_ip = "10.92.101.248"
+#Optional, if not present, host_ip will be used as listen_ip.
+#This is required if your cassandra node IP 'listen IP' is different from your host_ip.
+listen_ip = "100.64.18.248"
+
+[[source.nodes]]
+name = "node-1"
+host_ip = "10.92.99.185"
+listen_ip = "100.64.62.78"
+
+[[source.nodes]]
+name = "node-2"
+host_ip = "10.92.117.144"
+listen_ip = "100.64.166.41"
+
+#You can keep adding nodes like this.
+#[[source.nodes]]
+#name = "node-3-server"
+#host_ip = "10.170.121.8"
+#listen_ip = "10.170.121.8"
+
+[target]
+ssh_user="ec2-user"
+ssh_key_path="/Users/mpw/dataml-migration/target/node-key.pem"
+#Location to copy the required files and scripts to work on the node. Folder will be created if it doesn't exist
+#Optional. Default: $HOME/cass-migration
+work_path="/home/ec2-user/cass-migration"
+
+#cassandra.dc_name is required in [target] variables. This value will be used when creating Keyspaces.
+cassandra.dc_name="dc1"
+cassandra.user="dev-k8ssandra-superuser"
+cassandra.password="superuser-pw"
+
+[[target.nodes]]
+name = "node-0"
+host_ip = "10.92.40.31"
+listen_ip = "100.64.63.83"
+[[target.nodes]]
+name = "node-1"
+host_ip = "10.92.41.209"
+listen_ip = "100.64.114.157"
+[[target.nodes]]
+name = "node-2"
+host_ip = "10.92.42.27"
+listen_ip = "100.64.144.12"
